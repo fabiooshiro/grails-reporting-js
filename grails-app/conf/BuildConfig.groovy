@@ -1,6 +1,8 @@
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
+grails.project.target.level = 1.6
+grails.project.source.level = 1.6
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
@@ -33,6 +35,11 @@ grails.project.dependency.resolution = {
               ":rest-client-builder:1.0.3") {
             export = false
         }
-        compile ":criteria-js:0.1"
+        runtime(":hibernate:$grailsVersion") {
+            export = false
+        }
+        runtime ":jquery:1.8.2"
+        runtime ":resources:1.1.6"
+        compile ":criteria-js:0.2"
     }
 }
