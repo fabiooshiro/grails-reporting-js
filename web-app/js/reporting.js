@@ -209,13 +209,14 @@ var ReportingJs = (function(){
 
 	function createDomainTitle(domain, conf){
 		var simpleName = domain.simpleName;
-		var a = $('<a>').text(simpleName);
-		a.attr('href', '#' + simpleName);
-		a.click(function(){
+		var control = $('<div>').text(simpleName);
+		var btnShowReport = $('<input class="btn">').attr('type', 'button').val('Report!');
+		control.append(btnShowReport);
+		btnShowReport.click(function(){
 			conf.yAxis = null;
 			callServer(domain, conf);
 		});
-		return a;
+		return control;
 	};
 
 	function createDomainDiv(domain, outputTable){
@@ -223,37 +224,41 @@ var ReportingJs = (function(){
 	};
 
 	function createProjectionOptions(domain, prop){
-		var select = $('<select>').attr('name', domain.simpleName + '.' + prop + '.projections')
+		var select = $('<select class="span6">').attr('name', domain.simpleName + '.' + prop + '.projections')
+			.append($('<option>').val('hide').text('hide'))
 			.append($('<option>').val('property').text('show'))
 			.append($('<option>').val('groupProperty').text('group'))
 			.append($('<option>').val('min').text('min'))
 			.append($('<option>').val('max').text('max'))
 			.append($('<option>').val('sum').text('sum'))
 			.append($('<option>').val('avg').text('avg'))
+			.append($('<option>').val('hide').text('filter'))
 		;
 		domain.props[prop].getMethod = function(){
 			return select.val();
+		};
+		domain.props[prop].inProjection = function(){
+			return select.val() != 'hide';
 		};
 		return select;
 	};
 
 	function createAttrOptions(domain, prop){
-		var chk = $('<input>').attr('type', 'checkbox').attr('name', domain.simpleName + '.' + prop + '.visible');
-		domain.props[prop].inProjection = function(){return chk.is(':checked')};
-		var lbl = $('<label>').append(chk).append(prop);
-		var span = $('<span>').append(createProjectionOptions(domain, prop)).append(lbl);
-		return span;
+		var lbl = $('<label class="control-label">').append(prop + " :");
+		var select = createProjectionOptions(domain, prop);
+		var controls = $('<div class="controls">').append(select);
+		var controlProp = $('<div class="control-group domain-property">').append(lbl).append(controls);
+		return controlProp;
 	};
 
 	function createDomainProperties(domain){
 		var div = $('<div>').append($('<div>').text("Columns"));
-		var ul = $('<ul class="domain-properties">');
+		var domainProperties = $('<div class="domain-properties">');
 		for(var prop in domain.props){
-			var lbl = createAttrOptions(domain, prop);
-			var li = $('<li>').append(lbl);
-			ul.append(li);
+			var domainPropControl = createAttrOptions(domain, prop);
+			domainProperties.append(domainPropControl);
 		}
-		return div.append(ul);
+		return div.append(domainProperties);
 	};
 
 	function createAttrOrderBy(domain, prop, showIn){

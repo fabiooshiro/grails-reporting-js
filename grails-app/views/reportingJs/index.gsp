@@ -53,18 +53,16 @@
 			it("should create an domain target", function(){
 				initReporting();
 				step("verify userInterface", function(){
-					expect($('ul.domain-properties li').length).toEqual(11);
+					expect($('.domain-property').length).toEqual(11);
 				});
 			});
 
 			it("should sum amount, group by year", function(){
 				initReporting();
 				step("configure sum", function(){
-					$('[name="Sale.amount.visible"]').prop('checked', true);
 					$('[name="Sale.amount.projections"]').val('sum');
 				})
 				step("configure group by year", function(){
-					$('[name="Sale.year.visible"]').prop('checked', true);
 					$('[name="Sale.year.projections"]').val('groupProperty');
 				});
 				step("load report", function(done){
@@ -86,11 +84,9 @@
 			it("should accept custom render method", function(){
 				initReporting();
 				step("configure sum", function(){
-					$('[name="Sale.amount.visible"]').prop('checked', true);
 					$('[name="Sale.amount.projections"]').val('sum');
 				})
 				step("configure group by year", function(){
-					$('[name="Sale.year.visible"]').prop('checked', true);
 					$('[name="Sale.year.projections"]').val('groupProperty');
 				});
 				step("create renderer", function(done){
@@ -142,15 +138,10 @@
 					});
 				});
 				step("add axis configurations", function(){
-					$('[name="Sale.music.visible"]').prop('checked', true);
 					$('[name="Sale.music.projections"]').val('groupProperty');
-					$('[name="Sale.quarter.visible"]').prop('checked', true);
 					$('[name="Sale.quarter.projections"]').val('groupProperty');
-					$('[name="Sale.year.visible"]').prop('checked', true);
 					$('[name="Sale.year.projections"]').val('groupProperty');
-					$('[name="Sale.quantity.visible"]').prop('checked', true);
 					$('[name="Sale.quantity.projections"]').val('sum');
-					$('[name="Sale.amount.visible"]').prop('checked', true);
 					$('[name="Sale.amount.projections"]').val('sum');
 					reportingJs.setXaxis([
 						{prop: 'music'}
@@ -181,8 +172,9 @@
 <body>
 	<div class="row-fluid">
 		<div class="span3">
-			<div id="userInterface">
-			</div>
+			<form class="form-horizontal">
+				<div id="userInterface"></div>
+			</form>
 		</div>
 		<div class="span9">
 			<table id="table" class="table table-striped table-bordered table-hover table-condensed">
