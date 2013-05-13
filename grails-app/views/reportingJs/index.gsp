@@ -171,14 +171,19 @@
 			<div class="span3">
 				<form class="form-horizontal">
 					<div id="userInterface">
-						<ul>
-							<li ng-repeat="prop in domain.props">
-								{{prop.name}}: <input type="button" value="Y index" ng-click="addY(prop)"/>
-								<input type="button" value="X index" ng-click="addX(prop)"/>
-								<input type="button" value="Value" ng-click="addValue(prop)"/>
-								<input type="button" value="Sort" ng-click="addOrder(prop)"/>
-							</li>
-						</ul>
+						<table>
+							<tr ng-repeat="prop in domain.props">
+								<th style="text-align: right">
+									{{prop.name}}:
+								</th>
+								<td>
+									<input type="button" value="Y index" ng-click="addY(prop)"/>
+									<input type="button" value="X index" ng-click="addX(prop)"/>
+									<input type="button" value="Value" ng-click="addValue(prop)"/>
+									<input type="button" value="Sort" ng-click="addOrder(prop)"/>
+								</td>
+							</tr>
+						</table>
 
 						<div>
 							Y:
