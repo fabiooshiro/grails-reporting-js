@@ -17,7 +17,7 @@ class ReportingJsController {
 			model.simpleName = gDomainClass.clazz.simpleName
 			model.props = [:]
 			gDomainClass.getProperties().each{
-				model.props.put(it.name, [type: it.type.name])
+				model.props.put(it.name, [type: it.type.name, name: it.name])
 			}
 			model.association = gDomainClass.getAssociationMap()
 			models.add(model)

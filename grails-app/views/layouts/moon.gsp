@@ -1,9 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
     	<title><g:layoutTitle default="Moon" /></title>
-    	<r:layoutResources />
     	<g:layoutHead />
+    	<r:layoutResources />
     </head>
     <body>
     	<g:layoutBody />
