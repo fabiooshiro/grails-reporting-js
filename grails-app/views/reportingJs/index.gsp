@@ -201,16 +201,20 @@
 						</div>
 						<div>
 							V:
-							<span ng-repeat="prop in conf.cellValues">
+							<div ng-repeat="prop in conf.cellValues">
 								{{prop.prop}}
+								<select ng-model="prop.format" ng-options="c.name for c in prop.formats" class="input-small" style="display: inline">
+									<option value="">Format</option>
+								</select>
 								<select ng-model="prop.projections" class="input-small" style="display: inline">
+									<option value="groupProperty">group</option>
 									<option value="sum">sum</option>
 									<option value="avg">avg</option>
 									<option value="min">min</option>
 									<option value="max">max</option>
 								</select>
 								<a href="javascript: void(0);" ng-click="removeV(prop)">[x]</a>; 
-							</span>
+							</div>
 						</div>
 						<div>
 							S:

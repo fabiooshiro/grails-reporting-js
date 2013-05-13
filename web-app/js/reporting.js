@@ -198,7 +198,7 @@ var ReportingJs = (function(){
 			}
 		};
 		criteria.list(function(data){
-			if(conf.yAxis){
+			if(conf.xAxis.length > 0){
 				createAxisTable(data, headers, conf);
 			}else{
 				createSimpleTable(data, headers, conf);
@@ -212,118 +212,6 @@ var ReportingJs = (function(){
 		}
 		return item;
 	}
-
-	function createDomainTitle(domain, conf){
-		var simpleName = domain.simpleName;
-		var control = $('<div>').text(simpleName);
-		var btnShowReport = $('<input class="btn">').attr('type', 'button').val('Report!');
-		control.append(btnShowReport);
-		btnShowReport.click(function(){
-			conf.yAxis = null;
-			callServer(domain, conf);
-		});
-		return control;
-	};
-
-	function createDomainDiv(domain, outputTable){
-		return $('<div>').append(createDomainTitle(domain, outputTable));
-	};
-
-	function createFilter(){
-		var start = $('<input class="input-small" type="text">');
-		var end = $('<input class="input-small" type="text">');
-		var filter = $('<div class="hide">').append(start).append('to').append(end);
-		return filter;
-	};
-
-	function createProjectionOptions(controls, domain, prop){
-		var select = $('<select class="input-small">').attr('name', domain.simpleName + '.' + prop + '.projections')
-			.append($('<option>').val('hide').text('hide'))
-			.append($('<option>').val('property').text('show'))
-			.append($('<option>').val('groupProperty').text('group'))
-			.append($('<option>').val('min').text('min'))
-			.append($('<option>').val('max').text('max'))
-			.append($('<option>').val('sum').text('sum'))
-			.append($('<option>').val('avg').text('avg'))
-		;
-		
-		domain.props[prop].getMethod = function(){
-			return select.val();
-		};
-		domain.props[prop].inProjection = function(){
-			return select.val() != 'hide';
-		};
-		controls.append(select);
-		return select;
-	};
-
-	function createAttrOptions(domain, prop){
-		var lbl = $('<label class="control-label">').append(prop + " :");
-		var controls = $('<div class="controls">');
-		var select = createProjectionOptions(controls, domain, prop);
-		var controlProp = $('<div class="control-group domain-property">').append(lbl).append(controls);
-		return controlProp;
-	};
-
-	function createDomainProperties(domain){
-		var div = $('<div>').append($('<div>').text("Columns"));
-		var domainProperties = $('<div class="domain-properties">');
-		for(var prop in domain.props){
-			var domainPropControl = createAttrOptions(domain, prop);
-			domainProperties.append(domainPropControl);
-		}
-		return div.append(domainProperties);
-	};
-
-	function createAttrOrderBy(domain, prop, showIn){
-		var select = $('<select>')
-			.append($('<option>').val('').text('none'))
-			.append($('<option>').val('asc').text('asc'))
-			.append($('<option>').val('desc').text('desc'))
-		;
-		select.change(function(){
-			var newOrder = [];
-			for (var i = 0; i < domain.orderBy.length; i++) {
-				if(domain.orderBy[i].sort != prop){
-					newOrder.push(domain.orderBy[i]);
-				}
-			};
-			if(select.val() != ''){
-				newOrder.push({sort: prop, order: select.val()});
-			}
-			domain.orderBy = newOrder;
-			showIn.empty();
-			for (var i = 0; i < domain.orderBy.length; i++) {
-				var o = domain.orderBy[i];
-				showIn.append(o.sort + ':' + o.order + '; ');
-			};
-		});
-		var lbl = $('<label>').append(prop).append(select);
-		return lbl;
-	};
-
-	function createDomainOrderBy(domain){
-		domain.orderBy = [];
-		var showIn = $('<li>');
-		var ul = $('<ul>');
-		var div = $('<div>').append($('<div>').text("Order by"));
-		for(var prop in domain.props){
-			var lbl = createAttrOrderBy(domain, prop, showIn);
-			var li = $('<li>').append(lbl);
-			ul.append(li);
-		}
-		ul.append(showIn);
-		return div.append(ul);
-	};
-
-	function createDomainDescription(domain, conf){
-		if(conf.userInputUI){
-			var domainDiv = createDomainDiv(domain, conf);
-			domainDiv.append(createDomainProperties(domain));
-			domainDiv.append(createDomainOrderBy(domain));
-			conf.userInputUI.append(domainDiv);
-		}
-	};
 
 	function listDomains(cb){
 		if(domainListCached != null){
@@ -356,7 +244,7 @@ var ReportingJs = (function(){
 			for (var i = 0; i < domains.length; i++) {
 				if(domains[i].simpleName == conf.domainName){
 					domain = domains[i];
-					createDomainDescription(domains[i], conf);		
+					break;
 				}
 			};
 			conf.onInit(domain);
@@ -384,6 +272,19 @@ var ReportingJs = (function(){
 
 		this.setOrderBy = function(arr){
 			conf.orderBy = arr;
+		};
+
+		this.getDomain = function(fullName, callback){
+			var domain;
+			listDomains(function(domains){
+				for (var i = 0; i < domains.length; i++) {
+					if(domains[i].fullName == fullName){
+						domain = domains[i];
+						break;
+					}
+				};
+			});
+			callback(domain);
 		};
 	};
 

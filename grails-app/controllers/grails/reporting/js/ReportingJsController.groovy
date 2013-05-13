@@ -15,6 +15,7 @@ class ReportingJsController {
 		grailsApplication.domainClasses.each{ gDomainClass ->
 			def model = [:]
 			model.simpleName = gDomainClass.clazz.simpleName
+			model.fullName = gDomainClass.clazz.name
 			model.props = [:]
 			gDomainClass.getProperties().each{
 				model.props.put(it.name, [type: it.type.name, name: it.name])
