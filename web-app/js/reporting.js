@@ -197,6 +197,11 @@ var ReportingJs = (function(){
 				criteria.order(order.sort, order.order);
 			}
 		};
+		for (var i = 0; i < conf.filter.length; i++) {
+			var filter = conf.filter[i];
+			console.log(filter.val);
+			criteria[filter.method](filter.prop, filter.val);
+		};
 		criteria.list(function(data){
 			if(conf.xAxis.length > 0){
 				createAxisTable(data, headers, conf);
@@ -237,7 +242,8 @@ var ReportingJs = (function(){
 			xAxis: [],
 			yAxis: [],
 			cellValues: [],
-			orderBy: []
+			orderBy: [],
+			filter: []
 		}, userConfig);
 
 		listDomains(function(domains){
@@ -285,6 +291,10 @@ var ReportingJs = (function(){
 				};
 			});
 			callback(domain);
+		};
+
+		this.setFilter = function(filter){
+			conf.filter = filter;
 		};
 	};
 

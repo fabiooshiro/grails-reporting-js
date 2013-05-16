@@ -1,6 +1,53 @@
 
 var module = angular.module('reportAngular', []);
 
+module.directive('filterVal', function($parse) {
+	return function(scope, element, attrs) {
+		var ngModel = scope[attrs.model];
+		if(ngModel.type == 'java.util.Date'){
+			var ngModelVal = $parse(attrs.model + '.val');
+			element.datepicker({
+				dateFormat: "yy-mm-dd",
+				constrainInput: true,   
+				showWeeks: true,
+				onSelect : function(dateText, elem){
+					scope.$apply(function(scope){
+						ngModelVal.assign(scope, dateText);
+					});
+				}
+			});
+		}else if(ngModel.type == 'java.math.BigDecimal'){
+			var ngModelVal = $parse(attrs.model + '.val');
+			element.change(function(){
+				scope.$apply(function(scope){
+					ngModelVal.assign(scope, new BigDecimal(element.val()));
+				});
+			});
+		}else if(ngModel.type == 'java.lang.Integer'){
+			var ngModelVal = $parse(attrs.model + '.val');
+			element.change(function(){
+				scope.$apply(function(scope){
+					ngModelVal.assign(scope, {class: 'java.lang.Integer', value: element.val()});
+				});
+			});
+		}else if(ngModel.type == 'java.lang.Long'){
+			var ngModelVal = $parse(attrs.model + '.val');
+			element.change(function(){
+				scope.$apply(function(scope){
+					ngModelVal.assign(scope, {class: 'java.lang.Long', value: element.val()});
+				});
+			});
+		}else{
+			var ngModelVal = $parse(attrs.model + '.val');
+			element.change(function(){
+				scope.$apply(function(scope){
+					ngModelVal.assign(scope, element.val());
+				});
+			});
+		}
+	}
+});
+
 function ReportCtrl($scope, $filter){
 	var reportingJs;
 
@@ -13,7 +60,8 @@ function ReportCtrl($scope, $filter){
 		yAxis: [],
 		xAxis: [],
 		cellValues: [],
-		orderBy: []
+		orderBy: [],
+		filter: []
 	};
 
 	$(function(){
@@ -50,6 +98,10 @@ function ReportCtrl($scope, $filter){
 
 	$scope.removeS = function(prop){
 		remove($scope.conf.orderBy, prop);
+	};
+
+	$scope.removeF = function(prop){
+		remove($scope.conf.filter, prop);
 	};
 
 	$scope.addY = function(prop){
@@ -138,11 +190,17 @@ function ReportCtrl($scope, $filter){
 		$scope.conf.orderBy.push({sort: prop.name, order: 'asc'});
 	};
 
+	$scope.addFilter = function(prop){
+		var methods = ['eq', 'le', 'ge', 'lt', 'gt'];
+		$scope.conf.filter.push({prop: prop.name, method: 'eq', val: '', type: prop.type, methods: methods});
+	};
+
 	$scope.makeReport = function(){
 		reportingJs.setXaxis($scope.conf.xAxis);
 		reportingJs.setYaxis($scope.conf.yAxis);
 		reportingJs.setCellValues($scope.conf.cellValues);
 		reportingJs.setOrderBy($scope.conf.orderBy);
+		reportingJs.setFilter($scope.conf.filter);
 
 		for (var i = 0; i < $scope.conf.cellValues.length; i++) {
 			if($scope.conf.cellValues[i].format){

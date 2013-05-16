@@ -3,9 +3,10 @@
 	<title>Grails Reporting JS</title>
 	<meta name="layout" content="moon" />
 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="http://pivotal.github.io/jasmine/lib/jasmine-1.3.1/jasmine.css"/>
+	<link type="text/css" href="${createLinkTo(dir:'css',file:'jasmine.css')}" />
 	<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"/>
 	<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables_themeroller.css"/>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
 	
 
 	<script type="text/javascript">
@@ -14,9 +15,12 @@
 		}
 	</script>
 	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-	<script src="http://pivotal.github.io/jasmine/lib/jasmine-1.3.1/jasmine.js"></script>
-	<script src="http://pivotal.github.io/jasmine/lib/jasmine-1.3.1/jasmine-html.js"></script>
-	<script src="http://raw.github.com/fabiooshiro/jasmine-step/master/jasmine-step.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	
+	<g:javascript src="jasmine.js" />
+	<g:javascript src="jasmine-html.js" />
+	<g:javascript src="jasmine-step.js" />
+
 	<script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
 	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
@@ -48,71 +52,6 @@
 						expect(domains.length).toEqual(4);
 						done();
 					});
-				});
-			});
-
-			xit("should create an domain target", function(){
-				initReporting();
-				step("verify userInterface", function(){
-					expect($('.domain-property').length).toEqual(11);
-				});
-			});
-
-			xit("should sum amount, group by year", function(){
-				initReporting();
-				step("configure sum", function(){
-					$('[name="Sale.amount.projections"]').val('sum');
-				})
-				step("configure group by year", function(){
-					$('[name="Sale.year.projections"]').val('groupProperty');
-				});
-				step("load report", function(done){
-					reportingJs.loadReport();
-					done(function(){
-						return $('#table tbody tr td').length == 4
-					})
-				});
-				step("check results", function(){
-					//$('#table').dataTable();
-					var results = [];
-					$('#table tbody tr td').each(function(item, c){
-						results.push($(c).text());
-					});
-					expect(results.sort()).toEqual(["2012", "2013", "22954.2", "62695.8"]);
-				});
-			});
-
-			xit("should accept custom render method", function(){
-				initReporting();
-				step("configure sum", function(){
-					$('[name="Sale.amount.projections"]').val('sum');
-				})
-				step("configure group by year", function(){
-					$('[name="Sale.year.projections"]').val('groupProperty');
-				});
-				step("create renderer", function(done){
-					reportingJs.addCellRenderer({
-						column: 'amount',
-						render: function(value){
-							return $('<td>').text("$ " + value).css('text-align', 'right');
-						}
-					});
-					reportingJs.addCellRenderer({
-						column: 'year',
-						render: function(value){
-							return $('<td>').text(value).css('text-align', 'center');
-						}
-					});
-					reportingJs.addCellRenderer({
-						column: 'quantity',
-						render: function(value){
-							return $('<td>').text(value).css('text-align', 'right');
-						}
-					});
-					reportingJs.loadReport();
-					done(function(){
-						return $('#table tbody tr td').length == 4
-					})
 				});
 			});
 
@@ -156,8 +95,38 @@
 						{sort: 'quantity', order: 'desc'}
 					]);
 				});
-				step("load report", function(){
+				step("load report", function(done){
 					reportingJs.loadReport();
+					done(function(){
+						return $('#table tbody tr').length > 0;
+					});
+				});
+			});
+
+			it("should filter results", function(){
+				initReporting();
+				step("simple table", function(){
+					reportingJs.setCellValues([
+						{prop: 'music', projections: 'groupProperty'},
+						{prop: 'year', projections: 'groupProperty'},
+						{prop: 'quarter', projections: 'groupProperty'},
+						{prop: 'amount', projections: 'sum'},
+						{prop: 'quantity', projections: 'sum'}
+					]);
+					reportingJs.setOrderBy([
+						{sort: 'year', order: 'asc'},
+						{sort: 'quarter', order: 'asc'},
+						{sort: 'quantity', order: 'desc'}
+					]);
+					reportingJs.setFilter([
+						{prop: 'year', method: 'eq', val: 2013}
+					]);
+				});
+				step("load report", function(done){
+					reportingJs.loadReport();
+					done(function(){
+						return $('#table tbody tr').length == 10;
+					});
 				});
 			});
 
@@ -181,6 +150,7 @@
 									<input type="button" value="X index" ng-click="addX(prop)"/>
 									<input type="button" value="Value" ng-click="addValue(prop)"/>
 									<input type="button" value="Sort" ng-click="addOrder(prop)"/>
+									<input type="button" value="Filter" ng-click="addFilter(prop)"/>
 								</td>
 							</tr>
 						</table>
@@ -226,6 +196,17 @@
 								</select>
 								<a href="javascript: void(0);" ng-click="removeS(prop)">[x]</a>; 
 							</span>
+						</div>
+						<div>
+							F:
+							<div ng-repeat="prop in conf.filter">
+								{{prop.prop}}
+								<select ng-model="prop.method" ng-options="c for c in prop.methods" class="input-small" style="display: inline">
+									<option value="">Comparator</option>
+								</select>
+								<input type="text" model="prop" filter-val class="input-small"/>
+								<a href="javascript: void(0);" ng-click="removeF(prop)">[x]</a>; 
+							</div>
 						</div>
 						<input type="button" value="Report!" ng-click="makeReport()"/>
 					</div>
