@@ -60,8 +60,40 @@ var ReportingJs = (function(){
 		return {key: key.join(keySep), obj: obj};
 	}
 
+	function createDataMap(conf, objectList){
+		var dataMap = {};
+		var yAxisObj = [];
+		var yAxis = [];
+
+		var xAxis = [];
+
+		for (var i = 0; i < objectList.length; i++) {
+			var keyY = makeTableKey(objectList[i], conf.yAxis);
+			if(yAxis.indexOf(keyY.key) == -1){
+				yAxis.push(keyY.key);
+				yAxisObj.push(keyY);
+			}
+			var indexX = dataMap[keyY.key] || (dataMap[keyY.key] = {});
+			var keyX = makeTableKey(objectList[i], conf.xAxis);
+			if(xAxis.indexOf(keyX.key) == -1) xAxis.push(keyX.key);
+			indexX[keyX.key] = objectList[i];
+		};
+		return {data: dataMap, yAxis: yAxisObj, xAxis: xAxis};
+	}
+
+	function createTd(conf, obj, prop){
+		var td;
+		if(conf.columnRenderer[prop]){
+			td = conf.columnRenderer[prop].render(obj && obj[prop], obj);
+		}else{
+			td = $('<td>').append(createItemLabel(obj && obj[prop]));
+		}
+		return td;
+	}
+
 	function createAxisTable(data, headers, conf){
 		var objectList = makeObjects(data, headers);
+		var reportData = createDataMap(conf, objectList);
 		var distinctX = makeAxis(objectList, conf.xAxis);
 
 		var outputTable = conf.outputTable;
@@ -85,46 +117,22 @@ var ReportingJs = (function(){
 			};
 		};
 		thead.append(tr);
-		
-		var dataMap = {};
-		var yAxisObj = [];
-		var yAxis = [];
-
-		var xAxis = [];
-
-		for (var i = 0; i < objectList.length; i++) {
-			var keyY = makeTableKey(objectList[i], conf.yAxis);
-			if(yAxis.indexOf(keyY.key) == -1){
-				yAxis.push(keyY.key);
-				yAxisObj.push(keyY);
-			}
-			var indexX = dataMap[keyY.key] || (dataMap[keyY.key] = {});
-			var keyX = makeTableKey(objectList[i], conf.xAxis);
-			if(xAxis.indexOf(keyX.key) == -1) xAxis.push(keyX.key);
-			indexX[keyX.key] = objectList[i];
-		};
 
 		var tbody = outputTable.find('tbody');
 		tbody.empty();
 
-		for (var i = 0; i < yAxis.length; i++) {
+		for (var i = 0; i < reportData.yAxis.length; i++) {
 			var tr = $('<tr>');
 			for (var j = 0; j < conf.yAxis.length; j++) {
-				var td = $('<td>').append(createItemLabel(yAxisObj[i].obj[conf.yAxis[j].prop]));
+				var prop = conf.yAxis[j].prop;
+				var td = createTd(conf, reportData.yAxis[i].obj, prop);
 				tr.append(td);
 			}
-			for (var j = 0; j < xAxis.length; j++) {
-				var cellValue = dataMap[yAxis[i]][xAxis[j]];
+			for (var j = 0; j < reportData.xAxis.length; j++) {
+				var cellValue = reportData.data[reportData.yAxis[i].key][reportData.xAxis[j]];
 				for (var k = 0; k < conf.cellValues.length; k++) {
 					var prop = conf.cellValues[k].prop;
-					var td;
-
-					if(conf.columnRenderer[prop]){
-						td = conf.columnRenderer[prop].render(cellValue[prop], cellValue);
-					}else{
-						td = $('<td>').append(createItemLabel(cellValue[prop]));
-					}
-
+					var td = createTd(conf, cellValue, prop);
 					tr.append(td);
 				};
 			};
@@ -143,7 +151,7 @@ var ReportingJs = (function(){
 		};
 		thead.append(tr);
 
-		var dataTable;// = outputTable.dataTable();
+		var dataTable;
 		if(dataTable){
 			dataTable.fnClearTable();
 			dataTable.fnAddData(data);
@@ -199,7 +207,6 @@ var ReportingJs = (function(){
 		};
 		for (var i = 0; i < conf.filter.length; i++) {
 			var filter = conf.filter[i];
-			console.log(filter.val);
 			criteria[filter.method](filter.prop, filter.val);
 		};
 		criteria.list(function(data){
@@ -256,8 +263,9 @@ var ReportingJs = (function(){
 			conf.onInit(domain);
 		});
 
-		this.loadReport = function(){
+		this.loadReport = function(callback){
 			callServer(domain, conf);
+			if(callback) callback();
 		};
 
 		this.addCellRenderer = function(renderer){

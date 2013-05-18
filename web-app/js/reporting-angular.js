@@ -1,4 +1,6 @@
-
+/**
+ * User Interface
+ */
 var module = angular.module('reportAngular', []);
 
 module.directive('filterVal', function($parse) {
@@ -104,14 +106,6 @@ function ReportCtrl($scope, $filter){
 		remove($scope.conf.filter, prop);
 	};
 
-	$scope.addY = function(prop){
-		$scope.conf.yAxis.push({prop: prop.name, projections: 'groupProperty'});
-	};
-
-	$scope.addX = function(prop){
-		$scope.conf.xAxis.push({prop: prop.name, projections: 'groupProperty'});
-	};
-
 	var currencyRenderer = {
 		render: function(value){
 			var formatted = $filter('currency')(value);
@@ -151,9 +145,7 @@ function ReportCtrl($scope, $filter){
 		}
 	};
 
-	$scope.addValue = function(prop){
-		var obj = {prop: prop.name, projections: 'sum'};
-
+	function bindFormats(obj, prop){
 		if(prop.type == 'java.math.BigDecimal'){
 			obj.formats = [
 				{name: '$ #,##0.00', renderer: currencyRenderer},
@@ -182,7 +174,23 @@ function ReportCtrl($scope, $filter){
 				}
 			});
 		}
+	};
 
+	$scope.addY = function(prop){
+		var obj = {prop: prop.name, projections: 'groupProperty'};
+		bindFormats(obj, prop);
+		$scope.conf.yAxis.push(obj);
+	};
+
+	$scope.addX = function(prop){
+		var obj = {prop: prop.name, projections: 'groupProperty'};
+		bindFormats(obj, prop);
+		$scope.conf.xAxis.push(obj);
+	};
+
+	$scope.addValue = function(prop){
+		var obj = {prop: prop.name, projections: 'sum'};
+		bindFormats(obj, prop);
 		$scope.conf.cellValues.push(obj);
 	};
 
@@ -195,21 +203,25 @@ function ReportCtrl($scope, $filter){
 		$scope.conf.filter.push({prop: prop.name, method: 'eq', val: '', type: prop.type, methods: methods});
 	};
 
+	function insertAllRenderer(arr){
+		for (var i = 0; i < arr.length; i++) {
+			if(arr[i].format){
+				var cellValue = arr[i];
+				var obj = $.extend({column: cellValue.prop}, cellValue.format.renderer);
+				reportingJs.addCellRenderer(obj);
+			}
+		};
+	};
+
 	$scope.makeReport = function(){
 		reportingJs.setXaxis($scope.conf.xAxis);
 		reportingJs.setYaxis($scope.conf.yAxis);
 		reportingJs.setCellValues($scope.conf.cellValues);
 		reportingJs.setOrderBy($scope.conf.orderBy);
 		reportingJs.setFilter($scope.conf.filter);
-
-		for (var i = 0; i < $scope.conf.cellValues.length; i++) {
-			if($scope.conf.cellValues[i].format){
-				var cellValue = $scope.conf.cellValues[i];
-				var obj = $.extend({column: cellValue.prop}, cellValue.format.renderer);
-				reportingJs.addCellRenderer(obj);
-			}
-		};
-		
+		insertAllRenderer($scope.conf.yAxis);
+		insertAllRenderer($scope.conf.xAxis);
+		insertAllRenderer($scope.conf.cellValues);
 		reportingJs.loadReport();
 	};
 }

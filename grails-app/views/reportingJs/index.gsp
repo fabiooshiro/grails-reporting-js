@@ -130,6 +130,36 @@
 				});
 			});
 
+			it("should format Y", function(){
+				initReporting();
+				step("set up", function(){
+					reportingJs.setYaxis([
+						{prop: 'date', projections: 'groupProperty'},
+					]);
+					reportingJs.setCellValues([
+						{prop: 'music', projections: 'groupProperty'},
+						{prop: 'year', projections: 'groupProperty'},
+						{prop: 'quarter', projections: 'groupProperty'},
+						{prop: 'amount', projections: 'sum'},
+						{prop: 'quantity', projections: 'sum'}
+					]);
+					reportingJs.setOrderBy([
+						{sort: 'year', order: 'asc'},
+						{sort: 'quarter', order: 'asc'},
+						{sort: 'quantity', order: 'desc'}
+					]);
+					reportingJs.setFilter([
+						{prop: 'year', method: 'eq', val: 2013}
+					]);
+				});
+				step("load report", function(done){
+					reportingJs.loadReport();
+					done(function(){
+						return $('#table tbody tr').length == 10;
+					});
+				});
+			});
+
 		});
 	});
 	</script>
@@ -146,9 +176,9 @@
 									{{prop.name}}:
 								</th>
 								<td>
-									<input type="button" value="Y index" ng-click="addY(prop)"/>
-									<input type="button" value="X index" ng-click="addX(prop)"/>
-									<input type="button" value="Value" ng-click="addValue(prop)"/>
+									<input type="button" value="Row" ng-click="addY(prop)"/>
+									<input type="button" value="Col" ng-click="addX(prop)"/>
+									<input type="button" value="Val" ng-click="addValue(prop)"/>
 									<input type="button" value="Sort" ng-click="addOrder(prop)"/>
 									<input type="button" value="Filter" ng-click="addFilter(prop)"/>
 								</td>
@@ -159,6 +189,9 @@
 							Y:
 							<span ng-repeat="prop in conf.yAxis">
 								{{prop.prop}} 
+								<select ng-model="prop.format" ng-options="c.name for c in prop.formats" class="input-small" style="display: inline">
+									<option value="">Format</option>
+								</select>
 								<a href="javascript: void(0);" ng-click="removeY(prop)">[x]</a>; 
 							</span>
 						</div>
@@ -166,6 +199,9 @@
 							X:
 							<span ng-repeat="prop in conf.xAxis">
 								{{prop.prop}}
+								<select ng-model="prop.format" ng-options="c.name for c in prop.formats" class="input-small" style="display: inline">
+									<option value="">Format</option>
+								</select>
 								<a href="javascript: void(0);" ng-click="removeX(prop)">[x]</a>; 
 							</span>
 						</div>
