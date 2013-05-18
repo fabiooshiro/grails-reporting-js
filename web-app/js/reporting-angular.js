@@ -68,8 +68,8 @@ function ReportCtrl($scope, $filter){
 
 	$(function(){
 		reportingJs = new ReportingJs({
-			domainName: 'Sale',
-			outputTable: $('#table'),
+			domainName: $scope.domainName,
+			outputTable: $($scope.tableSelector),
 			onInit: function(domain){
 				$scope.domain = domain;
 				$scope.$digest();

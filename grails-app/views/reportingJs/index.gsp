@@ -3,9 +3,6 @@
 	<title>Grails Reporting JS</title>
 	<meta name="layout" content="moon" />
 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
-	<link type="text/css" href="${createLinkTo(dir:'css',file:'jasmine.css')}" />
-	<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"/>
-	<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables_themeroller.css"/>
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
 	
 
@@ -16,16 +13,15 @@
 	</script>
 	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-	
-	<g:javascript src="jasmine.js" />
-	<g:javascript src="jasmine-html.js" />
-	<g:javascript src="jasmine-step.js" />
-
-	<script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
 	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
 	
 	<r:require module="reporting-js" />
+
+	<link type="text/css" href="${createLinkTo(dir:'css',file:'jasmine.css')}" />
+	<g:javascript src="jasmine.js" />
+	<g:javascript src="jasmine-html.js" />
+	<g:javascript src="jasmine-step.js" />
 
 	<script type="text/javascript" id="srcTest">
 	$(function(){
@@ -167,7 +163,7 @@
 </head>
 <body>
 	<div ng-app="reportAngular">
-		<div class="row-fluid" ng-controller="ReportCtrl">
+		<div class="row-fluid" ng-controller="ReportCtrl" ng-init="domainName='PoemSale';tableSelector='#table'">
 			<div class="span3">
 				<form class="form-horizontal">
 					<div id="userInterface">
@@ -187,7 +183,7 @@
 						</table>
 
 						<div>
-							Y:
+							Rows:
 							<span ng-repeat="prop in conf.yAxis">
 								{{prop.prop}} 
 								<select ng-model="prop.format" ng-options="c.name for c in prop.formats" class="input-small" style="display: inline">
@@ -197,7 +193,7 @@
 							</span>
 						</div>
 						<div>
-							X:
+							Cols:
 							<span ng-repeat="prop in conf.xAxis">
 								{{prop.prop}}
 								<select ng-model="prop.format" ng-options="c.name for c in prop.formats" class="input-small" style="display: inline">
@@ -207,7 +203,7 @@
 							</span>
 						</div>
 						<div>
-							V:
+							Values:
 							<div ng-repeat="prop in conf.cellValues">
 								{{prop.prop}}
 								<select ng-model="prop.format" ng-options="c.name for c in prop.formats" class="input-small" style="display: inline">
@@ -224,7 +220,7 @@
 							</div>
 						</div>
 						<div>
-							S:
+							Sort:
 							<span ng-repeat="prop in conf.orderBy">
 								{{prop.sort}}
 								<select ng-model="prop.order" class="input-small" style="display: inline">
@@ -235,7 +231,7 @@
 							</span>
 						</div>
 						<div>
-							F:
+							Filter:
 							<div ng-repeat="prop in conf.filter">
 								{{prop.prop}}
 								<select ng-model="prop.method" ng-options="c for c in prop.methods" class="input-small" style="display: inline">

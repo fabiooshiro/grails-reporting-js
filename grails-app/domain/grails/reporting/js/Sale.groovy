@@ -4,9 +4,9 @@ class Sale{
 
 	static belongsTo = [music: Music]
 
-	BigDecimal price
+	BigDecimal price = 0.0
 
-	Long quantity
+	Long quantity = 0
 
 	Integer week
 	Integer month
@@ -35,5 +35,6 @@ class Sale{
 		month formula: 'MONTH(SETTLEMENT_DATE)'
 		year formula: 'YEAR(SETTLEMENT_DATE)'
 		quarter formula: 'QUARTER(SETTLEMENT_DATE)'
+        autoImport false
 	}
 }
