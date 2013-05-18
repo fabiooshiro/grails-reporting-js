@@ -149,7 +149,8 @@
 						{sort: 'quantity', order: 'desc'}
 					]);
 					reportingJs.setFilter([
-						{prop: 'year', method: 'eq', val: 2013}
+						{prop: 'date', method: 'ge', val: '2013-01-01'},
+						{prop: 'date', method: 'le', val: '2013-01-10'},
 					]);
 				});
 				step("load report", function(done){

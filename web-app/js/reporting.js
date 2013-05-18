@@ -37,20 +37,6 @@ var ReportingJs = (function(){
 		}
 	}
 
-	function makeAxis(objectList, confAxis){
-		var yAxis = [];
-		var uniques = [];
-		for (var i = 0; i < objectList.length; i++) {
-			for (var j = 0; j < confAxis.length; j++) {
-				var yValue = objectList[i][confAxis[j].prop];
-				if(!contains(uniques, yValue)){
-					yAxis.push(yValue);
-				}
-			};
-		};
-		return yAxis;
-	};
-
 	function makeTableKey(obj, axis){
 		var keySep = '-|-';
 		var key = [];
@@ -66,6 +52,7 @@ var ReportingJs = (function(){
 		var yAxis = [];
 
 		var xAxis = [];
+		var xAxisObj = [];
 
 		for (var i = 0; i < objectList.length; i++) {
 			var keyY = makeTableKey(objectList[i], conf.yAxis);
@@ -75,10 +62,13 @@ var ReportingJs = (function(){
 			}
 			var indexX = dataMap[keyY.key] || (dataMap[keyY.key] = {});
 			var keyX = makeTableKey(objectList[i], conf.xAxis);
-			if(xAxis.indexOf(keyX.key) == -1) xAxis.push(keyX.key);
+			if(xAxis.indexOf(keyX.key) == -1){
+				xAxis.push(keyX.key);
+				xAxisObj.push(keyX);
+			}
 			indexX[keyX.key] = objectList[i];
 		};
-		return {data: dataMap, yAxis: yAxisObj, xAxis: xAxis};
+		return {data: dataMap, yAxis: yAxisObj, xAxis: xAxisObj};
 	}
 
 	function createTd(conf, obj, prop){
@@ -94,23 +84,34 @@ var ReportingJs = (function(){
 	function createAxisTable(data, headers, conf){
 		var objectList = makeObjects(data, headers);
 		var reportData = createDataMap(conf, objectList);
-		var distinctX = makeAxis(objectList, conf.xAxis);
 
 		var outputTable = conf.outputTable;
 		var thead = outputTable.find('thead');
 		var tr = $('<tr>');
 		for (var i = 0; i < conf.yAxis.length; i++) {
-			var th = $('<th>').append(conf.yAxis[i].prop).attr('rowspan', 2);
+			var th = $('<th>').append(conf.yAxis[i].prop).attr('rowspan', conf.xAxis.length + 1);
 			tr.append(th);
 		};
-		for (var i = 0; i < distinctX.length; i++) {
-			var th = $('<th>').append(createItemLabel(distinctX[i])).attr('colspan', conf.cellValues.length);
-			tr.append(th);
+		for (var i = 0; i < conf.xAxis.length; i++) {
+			var lastTextContent = null, lastTh, colspan = 1;
+			for (var j = 0; j < reportData.xAxis.length; j++) {
+				var prop = conf.xAxis[i].prop;
+				var td = createTd(conf, reportData.xAxis[j].obj, prop);
+				if(td.text() != lastTextContent){
+					var th = $('<th>').append(td.html());
+					colspan = 1;
+					th.attr('colspan', conf.cellValues.length);
+					tr.append(th);
+					lastTextContent = td.text();
+					lastTh = th;
+				}else{
+					lastTh.attr('colspan', ++colspan * conf.cellValues.length);
+				}
+			};
+			thead.append(tr);
+			tr = $('<tr>');
 		};
-		thead.append(tr);
-
-		tr = $('<tr>');
-		for (var j = 0; j < distinctX.length; j++) {
+		for (var j = 0; j < reportData.xAxis.length; j++) {
 			for (var i = 0; i < conf.cellValues.length; i++) {
 				var th = $('<th>').append(conf.cellValues[i].prop);
 				tr.append(th);	
@@ -129,7 +130,7 @@ var ReportingJs = (function(){
 				tr.append(td);
 			}
 			for (var j = 0; j < reportData.xAxis.length; j++) {
-				var cellValue = reportData.data[reportData.yAxis[i].key][reportData.xAxis[j]];
+				var cellValue = reportData.data[reportData.yAxis[i].key][reportData.xAxis[j].key];
 				for (var k = 0; k < conf.cellValues.length; k++) {
 					var prop = conf.cellValues[k].prop;
 					var td = createTd(conf, cellValue, prop);
