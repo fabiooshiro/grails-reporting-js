@@ -180,11 +180,13 @@ var ReportingJs = (function(){
 		for (var i = 0; i < arr.length; i++) {
 			var method = arr[i].projections;
 			var p = arr[i].prop;
-			headers.push(p);
-			if(method == 'sum' || method == 'min' || method == 'max'){
-				projections[method](p, p);	
-			}else{
-				projections[method](p);
+			if(headers.indexOf(p) == -1){
+				headers.push(p);
+				if(method == 'sum' || method == 'min' || method == 'max'){
+					projections[method](p, p);	
+				}else{
+					projections[method](p);
+				}
 			}
 		};
 	}
