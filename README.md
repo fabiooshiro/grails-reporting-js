@@ -4,6 +4,11 @@ grails-reporting-js
 Grails Reporting
 
 ```jsp
+<script type="text/javascript">
+	var config = {
+		contextPath: '${request.contextPath}'
+	}
+</script>
 <!-- angular, jquery, jquery-ui here -->
 <r:require module="reporting-js"/>
 
