@@ -1,5 +1,5 @@
 <div ng-app="reportAngular">
-	<div class="row-fluid" ng-controller="ReportCtrl" ng-init="domainName='${modelName}';tableSelector='#table'">
+	<div class="row-fluid" ng-controller="ReportCtrl" ng-init="domainName='${modelName}';tableSelector='#table';contextPath='${request.contextPath}'">
 		<div class="span3">
 			<form class="form-horizontal">
 				<div id="userInterface">
@@ -75,25 +75,37 @@
 					</div>
 					<div>
 						<strong>Sort:</strong>
-						<div ng-repeat="prop in conf.orderBy">
-							{{prop.sort}}
-							<select ng-model="prop.order" class="input-small" style="display: inline">
-								<option value="asc">asc</option>
-								<option value="desc">desc</option>
-							</select>
-							<a href="javascript: void(0);" ng-click="removeS(prop)">[x]</a>; 
-						</div>
+						<table>
+							<tr ng-repeat="prop in conf.orderBy">
+								<td>{{prop.sort}}</td>
+								<td>
+									<select ng-model="prop.order" class="input-small" style="display: inline">
+										<option value="asc">asc</option>
+										<option value="desc">desc</option>
+									</select>
+								</td>
+								<td>
+									<a href="javascript: void(0);" ng-click="removeS(prop)" class="btn btn-mini"><i class="icon-trash"><span class="hide">remove</span></i></a> 
+								</td>
+							</tr>
+						</table>
 					</div>
 					<div>
 						<strong>Filter:</strong>
-						<div ng-repeat="prop in conf.filter">
-							{{prop.prop}}
-							<select ng-model="prop.method" ng-options="c for c in prop.methods" class="input-small" style="display: inline">
-								<option value="">Comparator</option>
-							</select>
-							<input type="text" model="prop" filter-val class="input-small"/>
-							<a href="javascript: void(0);" ng-click="removeF(prop)">[x]</a>; 
-						</div>
+						<table>
+							<tr ng-repeat="prop in conf.filter">
+								<td>{{prop.prop}}</td>
+								<td>
+									<select ng-model="prop.method" ng-options="c for c in prop.methods" class="input-small" style="display: inline">
+										<option value="">Comparator</option>
+									</select>
+									<input type="text" model="prop" filter-val class="input-small"/>
+								</td>
+								<td>
+									<a href="javascript: void(0);" ng-click="removeF(prop)" class="btn btn-mini"><i class="icon-trash"><span class="hide">remove</span></i></a> 
+								</td>
+							</tr>
+						</table>
 					</div>
 					<input type="button" value="Report!" ng-click="makeReport()"/>
 				</div>

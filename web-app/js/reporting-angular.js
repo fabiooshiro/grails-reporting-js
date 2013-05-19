@@ -51,6 +51,7 @@ module.directive('filterVal', function($parse) {
 });
 
 function ReportCtrl($scope, $filter){
+
 	var reportingJs;
 
 	$scope.colors = [
@@ -67,6 +68,7 @@ function ReportCtrl($scope, $filter){
 	};
 
 	$(function(){
+		ReportingJs.setContextPath($scope.contextPath);
 		reportingJs = new ReportingJs({
 			domainName: $scope.domainName,
 			outputTable: $($scope.tableSelector),
@@ -149,8 +151,12 @@ function ReportCtrl($scope, $filter){
 		if(prop.type == 'java.math.BigDecimal'){
 			obj.formats = [
 				{name: '$ #,##0.00', renderer: currencyRenderer},
+				{name: '#,##0', renderer: createNumberRenderer(0)},
+				{name: '#,##0.00', renderer: createNumberRenderer(2)},
+				{name: '#,##0.0000', renderer: createNumberRenderer(4)},
 				{name: '#,##0.000000', renderer: createNumberRenderer(6)},
 				{name: '#,##0.00000000', renderer: createNumberRenderer(8)},
+				{name: '#,##0.0000000000', renderer: createNumberRenderer(10)},
 				{name: 'center', renderer: centerRenderer}
 			];
 		}else if(prop.type == 'java.lang.Long' || prop.type == 'java.lang.Integer'){
@@ -163,6 +169,7 @@ function ReportCtrl($scope, $filter){
 			obj.formats = [
 				{name: 'yyyy-MM-dd', renderer: createDateRenderer('yyyy-MM-dd')},
 				{name: 'dd/MM/yyyy', renderer: createDateRenderer('dd/MM/yyyy')},
+				{name: 'MM/dd/yyyy', renderer: createDateRenderer('MM/dd/yyyy')},
 				{name: 'dd/MM/yyyy HH:mm:ss', renderer: createDateRenderer('dd/MM/yyyy HH:mm:ss')},
 			];
 		}else{

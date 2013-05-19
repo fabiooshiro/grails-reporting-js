@@ -27,7 +27,7 @@
 	$(function(){
 
 		describe("criteria js", function(){
-
+			ReportingJs.setContextPath(config.contextPath);
 			var reportingJs;
 
 			function initReporting(){
@@ -133,26 +133,33 @@
 						{prop: 'date', projections: 'groupProperty'},
 					]);
 					reportingJs.setCellValues([
-						{prop: 'music', projections: 'groupProperty'},
-						{prop: 'year', projections: 'groupProperty'},
-						{prop: 'quarter', projections: 'groupProperty'},
 						{prop: 'amount', projections: 'sum'},
 						{prop: 'quantity', projections: 'sum'}
 					]);
 					reportingJs.setOrderBy([
-						{sort: 'year', order: 'asc'},
-						{sort: 'quarter', order: 'asc'},
-						{sort: 'quantity', order: 'desc'}
+						{sort: 'date', order: 'asc'}
 					]);
 					reportingJs.setFilter([
 						{prop: 'date', method: 'ge', val: '2013-01-01'},
 						{prop: 'date', method: 'le', val: '2013-01-10'},
 					]);
+					reportingJs.addCellRenderer({
+						column: 'date',
+						render: function(value){
+							return $('<td class="dateF">').text(value.split('T')[0]).css('text-align', 'right');
+						}
+					});
 				});
 				step("load report", function(done){
 					reportingJs.loadReport();
 					done(function(){
 						return $('#table tbody tr').length == 10;
+					});
+				});
+				step("check format", function(){
+					expect($(".dateF").length).toBe(10);
+					$(".dateF").each(function(i, item){
+						expect($(item).text()).toMatch('\\d{4}-\\d{2}-\\d{2}');
 					});
 				});
 			});
@@ -162,102 +169,10 @@
 	</script>
 </head>
 <body>
-	<div ng-app="reportAngular">
-		<div class="row-fluid" ng-controller="ReportCtrl" ng-init="domainName='PoemSale';tableSelector='#table'">
-			<div class="span3">
-				<form class="form-horizontal">
-					<div id="userInterface">
-						<table>
-							<tr ng-repeat="prop in domain.props">
-								<th style="text-align: right">
-									{{prop.name}}:
-								</th>
-								<td>
-									<input type="button" value="Row" ng-click="addY(prop)"/>
-									<input type="button" value="Col" ng-click="addX(prop)"/>
-									<input type="button" value="Val" ng-click="addValue(prop)"/>
-									<input type="button" value="Sort" ng-click="addOrder(prop)"/>
-									<input type="button" value="Filter" ng-click="addFilter(prop)"/>
-								</td>
-							</tr>
-						</table>
-
-						<div>
-							Rows:
-							<span ng-repeat="prop in conf.yAxis">
-								{{prop.prop}} 
-								<select ng-model="prop.format" ng-options="c.name for c in prop.formats" class="input-small" style="display: inline">
-									<option value="">Format</option>
-								</select>
-								<a href="javascript: void(0);" ng-click="removeY(prop)">[x]</a>; 
-							</span>
-						</div>
-						<div>
-							Cols:
-							<span ng-repeat="prop in conf.xAxis">
-								{{prop.prop}}
-								<select ng-model="prop.format" ng-options="c.name for c in prop.formats" class="input-small" style="display: inline">
-									<option value="">Format</option>
-								</select>
-								<a href="javascript: void(0);" ng-click="removeX(prop)">[x]</a>; 
-							</span>
-						</div>
-						<div>
-							Values:
-							<div ng-repeat="prop in conf.cellValues">
-								{{prop.prop}}
-								<select ng-model="prop.format" ng-options="c.name for c in prop.formats" class="input-small" style="display: inline">
-									<option value="">Format</option>
-								</select>
-								<select ng-model="prop.projections" class="input-small" style="display: inline">
-									<option value="groupProperty">group</option>
-									<option value="sum">sum</option>
-									<option value="avg">avg</option>
-									<option value="min">min</option>
-									<option value="max">max</option>
-								</select>
-								<a href="javascript: void(0);" ng-click="removeV(prop)">[x]</a>; 
-							</div>
-						</div>
-						<div>
-							Sort:
-							<span ng-repeat="prop in conf.orderBy">
-								{{prop.sort}}
-								<select ng-model="prop.order" class="input-small" style="display: inline">
-									<option value="asc">asc</option>
-									<option value="desc">desc</option>
-								</select>
-								<a href="javascript: void(0);" ng-click="removeS(prop)">[x]</a>; 
-							</span>
-						</div>
-						<div>
-							Filter:
-							<div ng-repeat="prop in conf.filter">
-								{{prop.prop}}
-								<select ng-model="prop.method" ng-options="c for c in prop.methods" class="input-small" style="display: inline">
-									<option value="">Comparator</option>
-								</select>
-								<input type="text" model="prop" filter-val class="input-small"/>
-								<a href="javascript: void(0);" ng-click="removeF(prop)">[x]</a>; 
-							</div>
-						</div>
-						<input type="button" value="Report!" ng-click="makeReport()"/>
-					</div>
-				</form>
-			</div>
-			<div class="span9">
-				<table id="table" class="table table-striped table-bordered table-hover table-condensed">
-					<thead>
-					</thead>
-					<tbody>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<div class="row-fluid">
-			<pre id="sourcecode" style="clear: both">
-			</pre>
-		</div>
+	<g:reportJs modelName='Sale' />
+	<div class="row-fluid">
+		<pre id="sourcecode" style="clear: both">
+		</pre>
 	</div>
 <script type="text/javascript">
 $(function(){

@@ -1,6 +1,7 @@
 var ReportingJs = (function(){
 
 	var domainListCached;
+	var contextPath;
 
 	function clearTable(table){
 		table.find('thead').empty();
@@ -232,7 +233,7 @@ var ReportingJs = (function(){
 		if(domainListCached != null){
 			cb(domainListCached);
 		}else{
-			$.ajax(config.contextPath + '/reportingJs/domains', {
+			$.ajax(contextPath + '/reportingJs/domains', {
 				contentType : 'application/json',
 				type : 'POST',
 				success: function(data){
@@ -307,6 +308,10 @@ var ReportingJs = (function(){
 		this.setFilter = function(filter){
 			conf.filter = filter;
 		};
+	};
+
+	Moon.setContextPath = function(cp){
+		contextPath = cp;
 	};
 
 	Moon.listDomains = listDomains;
