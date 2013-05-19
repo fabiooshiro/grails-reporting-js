@@ -1,9 +1,9 @@
-grails-reporting-js
+Grails Reporting JS
 ===================
 
-Grails Reporting
+Live example at <a href="http://poetrystore.aws.af.cm/sale/report">http://poetrystore.aws.af.cm/sale/report</a> 
 
-Live example: <a href="http://poetrystore.aws.af.cm/sale/report">http://poetrystore.aws.af.cm/sale/report</a>
+Usage:
 
 ```jsp
 <script type="text/javascript">
