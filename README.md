@@ -3,6 +3,8 @@ grails-reporting-js
 
 Grails Reporting
 
+Live example: <a href="http://poetrystore.aws.af.cm/sale/report">http://poetrystore.aws.af.cm/sale/report</a>
+
 ```jsp
 <script type="text/javascript">
 	var config = {
@@ -44,8 +46,29 @@ Full code
 </html>
 
 
-````
+```
 
-http://localhost:8080/grails-reporting-js/reportingJs
+## 4 Developers
 
-Live example: <a href="http://poetrystore.aws.af.cm/sale/report">http://poetrystore.aws.af.cm/sale/report</a>
+Grails 2.1.3 (try with <a href="http://gvmtool.net/">gvm</a>)
+
+Open your favourite bash terminal and enter the following:
+```sh
+curl -s get.gvmtool.net | bash
+gvm use grails 2.1.3
+```
+
+get the source
+
+```sh
+git clone git@github.com:fabiooshiro/grails-reporting-js.git
+cd grails-reporting-js
+grails run-app
+```
+open <a href="http://localhost:8080/grails-reporting-js/reportingJs">http://localhost:8080/grails-reporting-js/reportingJs</a>
+
+### Core Files
+
+- web-app/js/reporting.js (table and criteria)
+- web-app/js/reporting-angular.js (user interface: angular controller)
+- grails-app/views/reportingJs/_fullReport.gsp (user interface: angular template)
