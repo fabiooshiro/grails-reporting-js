@@ -26,14 +26,19 @@ var CellRenderer = (function(){
 		return indexType[type];
 	};
 
+	function findByKey(key){
+		return indexKey[key];
+	};
+
 	return {
 		register: register,
-		findAllByType: findAllByType
+		findAllByType: findAllByType,
+		findByKey: findByKey
 	}
 })();
 
 (function(){
-	
+
 	angular.module('tableUI', [], function($provide) {
 
 		$provide.factory('cellRenderer', ['$filter', function($filter) {

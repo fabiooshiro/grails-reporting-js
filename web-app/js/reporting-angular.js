@@ -50,7 +50,7 @@ module.directive('filterVal', function($parse) {
 	}
 });
 
-function ReportCtrl($scope, $filter, cellRenderer){
+function ReportCtrl($scope, $filter, $http, cellRenderer){
 
 	var reportingJs;
 
@@ -67,6 +67,12 @@ function ReportCtrl($scope, $filter, cellRenderer){
 		filter: []
 	};
 
+	function loadReports(){
+		$http.get($scope.contextPath + '/reportingJs/list').success(function(data){
+			$scope.reports = data;
+		})
+	}
+
 	$(function(){
 		ReportingJs.setContextPath($scope.contextPath);
 		reportingJs = new ReportingJs({
@@ -74,6 +80,7 @@ function ReportCtrl($scope, $filter, cellRenderer){
 			outputTable: $($scope.tableSelector),
 			onInit: function(domain){
 				$scope.domain = domain;
+				loadReports();
 				$scope.$digest();
 			}
 		});
@@ -108,41 +115,18 @@ function ReportCtrl($scope, $filter, cellRenderer){
 		remove($scope.conf.filter, prop);
 	};
 
-	var currencyRenderer = {
-		render: function(value){
-			var formatted = $filter('currency')(value);
-			return $('<td>').text(formatted).css('text-align', 'right');
-		}
-	};
-
 	var centerRenderer = {
 		render: function(value){
 			return $('<td>').text(value).css('text-align', 'center');
 		}
 	}
 
-	function createDateRenderer(format){
+	function createPropRenderer(propertyName, prop){
 		return {
+			name: propertyName,
+			key: prop.type + '.' + propertyName,
 			render: function(value){
-				var formatted = $filter('date')(value, format);
-				return $('<td>').text(formatted).css('text-align', 'center');
-			}
-		};
-	};
-
-	function createNumberRenderer(fractionSize){
-		return {
-			render: function(value){
-				var formatted = $filter('number')(value, fractionSize);
-				return $('<td>').text(formatted).css('text-align', 'right');
-			}
-		};
-	}
-
-	function createPropRenderer(prop){
-		return {
-			render: function(value){
-				return $('<td>').text(value[prop]).css('text-align', 'center');
+				return $('<td>').text(value[propertyName]).css('text-align', 'center');
 			}
 		}
 	};
@@ -152,18 +136,21 @@ function ReportCtrl($scope, $filter, cellRenderer){
 			obj.projections = 'groupProperty';
 		}else if(reportingJs.isDomain(prop.type)){
 			obj.projections = 'groupProperty';
-			obj.formats = [];
-			reportingJs.getDomain(prop.type, function(domain){
-				for(var prop in domain.props){
-					obj.formats.push({name: prop, renderer: createPropRenderer(prop)});
-				}
-			});
 		}
 	}
 
 	function bindFormats(obj, prop){
 		obj.formats = cellRenderer.findAllByType(prop.type);
 		guessProjections(obj, prop);
+		if(reportingJs.isDomain(prop.type)){
+			obj.projections = 'groupProperty';
+			obj.formats = [];
+			reportingJs.getDomain(prop.type, function(domain){
+				for(var propertyName in domain.props){
+					obj.formats.push(createPropRenderer(propertyName, prop));
+				}
+			});
+		}
 	};
 
 	$scope.addY = function(prop){
@@ -182,6 +169,7 @@ function ReportCtrl($scope, $filter, cellRenderer){
 		var obj = {prop: prop.name, projections: 'sum'};
 		bindFormats(obj, prop);
 		$scope.conf.cellValues.push(obj);
+		return obj;
 	};
 
 	$scope.addOrder = function(prop){
@@ -197,10 +185,43 @@ function ReportCtrl($scope, $filter, cellRenderer){
 		for (var i = 0; i < arr.length; i++) {
 			if(arr[i].format){
 				var cellValue = arr[i];
-				var obj = $.extend({column: cellValue.prop}, cellValue.format);
+				var obj = $.extend({column: cellValue.prop}, cellRenderer.findByKey(cellValue.format.key));
 				reportingJs.addCellRenderer(obj);
 			}
 		};
+	};
+
+	function setFormat(obj, prop){
+		if(!prop.format) return false;
+		for (var i = 0; i < obj.formats.length; i++) {
+			if(obj.formats[i].key == prop.format.key){
+				obj.format = obj.formats[i];
+				return true;
+			}
+		};
+	}
+
+	function loadPropUI(arr, fAdd){
+		for (var i = 0; i < arr.length; i++) {
+			var prop = $scope.domain.props[arr[i].prop];
+			var obj = fAdd(prop);
+			setFormat(obj, arr[i]);
+			obj.projections = arr[i].projections;
+		};
+	};
+
+	$scope.loadReport = function(report){
+		var conf = $.parseJSON(report.jsonString);
+		reportingJs.setId(report.id);
+		reportingJs.setName(report.name);
+		$scope.conf.cellValues.length = 0;
+		loadPropUI(conf.cellValues, $scope.addValue);
+	};
+
+	$scope.saveReport = function(){
+		reportingJs.save(function(obj){
+			loadReports();
+		});
 	};
 
 	$scope.makeReport = function(){
