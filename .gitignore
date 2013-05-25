@@ -42,4 +42,5 @@
 # other
 *.iws
 /plugin.xml
+.DS_Store
 

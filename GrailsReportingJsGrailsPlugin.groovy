@@ -8,7 +8,7 @@ class GrailsReportingJsGrailsPlugin {
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
         "grails-app/views/error.gsp",
-        "grails-app/domains/**",
+        "grails-app/domain/grails/reporting/js/**",
     ]
 
     // TODO Fill in these fields

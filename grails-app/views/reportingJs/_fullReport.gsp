@@ -3,6 +3,9 @@
 		<div class="span3">
 			<form class="form-horizontal">
 				<div id="userInterface">
+					<div ng-repeat="report in reports">
+						<a href="#reportName" ng-click="loadReport(report)">{{report.name}}</a>
+					</div>
 					<table>
 						<tr ng-repeat="prop in domain.props">
 							<th style="text-align: right">
@@ -107,7 +110,8 @@
 							</tr>
 						</table>
 					</div>
-					<input type="button" value="Report!" ng-click="makeReport()"/>
+					<input type="button" value="Report!" ng-click="makeReport()" class="btn" />
+					<input type="button" value="Save" ng-click="saveReport()" class="btn" />
 				</div>
 			</form>
 		</div>

@@ -1,7 +1,7 @@
 /**
  * User Interface
  */
-var module = angular.module('reportAngular', []);
+var module = angular.module('reportAngular', ['tableUI']);
 
 module.directive('filterVal', function($parse) {
 	return function(scope, element, attrs) {
@@ -50,7 +50,7 @@ module.directive('filterVal', function($parse) {
 	}
 });
 
-function ReportCtrl($scope, $filter){
+function ReportCtrl($scope, $filter, cellRenderer){
 
 	var reportingJs;
 
@@ -147,32 +147,10 @@ function ReportCtrl($scope, $filter){
 		}
 	};
 
-	function bindFormats(obj, prop){
-		if(prop.type == 'java.math.BigDecimal'){
-			obj.formats = [
-				{name: '$ #,##0.00', renderer: currencyRenderer},
-				{name: '#,##0', renderer: createNumberRenderer(0)},
-				{name: '#,##0.00', renderer: createNumberRenderer(2)},
-				{name: '#,##0.0000', renderer: createNumberRenderer(4)},
-				{name: '#,##0.000000', renderer: createNumberRenderer(6)},
-				{name: '#,##0.00000000', renderer: createNumberRenderer(8)},
-				{name: '#,##0.0000000000', renderer: createNumberRenderer(10)},
-				{name: 'center', renderer: centerRenderer}
-			];
-		}else if(prop.type == 'java.lang.Long' || prop.type == 'java.lang.Integer'){
-			obj.formats = [
-				{name: 'center', renderer: centerRenderer},
-				{name: '#,##0', renderer: createNumberRenderer(0)}
-			];
-		}else if(prop.type == 'java.util.Date'){
+	function guessProjections(obj, prop){
+		if(prop.type == 'java.util.Date'){
 			obj.projections = 'groupProperty';
-			obj.formats = [
-				{name: 'yyyy-MM-dd', renderer: createDateRenderer('yyyy-MM-dd')},
-				{name: 'dd/MM/yyyy', renderer: createDateRenderer('dd/MM/yyyy')},
-				{name: 'MM/dd/yyyy', renderer: createDateRenderer('MM/dd/yyyy')},
-				{name: 'dd/MM/yyyy HH:mm:ss', renderer: createDateRenderer('dd/MM/yyyy HH:mm:ss')},
-			];
-		}else{
+		}else if(reportingJs.isDomain(prop.type)){
 			obj.projections = 'groupProperty';
 			obj.formats = [];
 			reportingJs.getDomain(prop.type, function(domain){
@@ -181,6 +159,11 @@ function ReportCtrl($scope, $filter){
 				}
 			});
 		}
+	}
+
+	function bindFormats(obj, prop){
+		obj.formats = cellRenderer.findAllByType(prop.type);
+		guessProjections(obj, prop);
 	};
 
 	$scope.addY = function(prop){
@@ -214,7 +197,7 @@ function ReportCtrl($scope, $filter){
 		for (var i = 0; i < arr.length; i++) {
 			if(arr[i].format){
 				var cellValue = arr[i];
-				var obj = $.extend({column: cellValue.prop}, cellValue.format.renderer);
+				var obj = $.extend({column: cellValue.prop}, cellValue.format);
 				reportingJs.addCellRenderer(obj);
 			}
 		};

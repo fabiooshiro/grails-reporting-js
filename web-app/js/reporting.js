@@ -254,7 +254,8 @@ var ReportingJs = (function(){
 			yAxis: [],
 			cellValues: [],
 			orderBy: [],
-			filter: []
+			filter: [],
+			name: ('Report ' + new Date())
 		}, userConfig);
 
 		listDomains(function(domains){
@@ -270,6 +271,10 @@ var ReportingJs = (function(){
 		this.loadReport = function(callback){
 			callServer(domain, conf);
 			if(callback) callback();
+		};
+
+		this.clearColumnRenderer = function(){
+			conf.columnRenderer = {};
 		};
 
 		this.addCellRenderer = function(renderer){
@@ -292,6 +297,15 @@ var ReportingJs = (function(){
 			conf.orderBy = arr;
 		};
 
+		this.isDomain = function(fullName){
+			for (var i = 0; i < domainListCached.length; i++) {
+				if(domainListCached[i].fullName == fullName){
+					return true;
+				}
+			};
+			return false;
+		};
+
 		this.getDomain = function(fullName, callback){
 			var domain;
 			listDomains(function(domains){
@@ -307,6 +321,32 @@ var ReportingJs = (function(){
 
 		this.setFilter = function(filter){
 			conf.filter = filter;
+		};
+
+		this.setId = function(id){
+			conf.id = id;
+		};
+
+		this.setName = function(name){
+			conf.name = name;
+		};
+
+		this.save = function(callback){
+			var obj = $.extend({}, conf, {
+				onInit: '', 
+				columnRenderer: {}, 
+				outputTable: ''
+			});
+			var jsonString = JSON.stringify(obj);
+			$.ajax(contextPath + '/reportingJs/save', {
+				contentType : 'application/json',
+				type : 'POST',
+				data: JSON.stringify({jsonString: jsonString, name: obj.name, id: obj.id}),
+				success: function(data){
+					conf.id = data.id;
+					callback(data);
+				}
+			});
 		};
 	};
 

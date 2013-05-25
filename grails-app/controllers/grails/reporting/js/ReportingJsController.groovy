@@ -6,8 +6,19 @@ class ReportingJsController {
 
 	def grailsApplication
 
-	def index() {
+	def index() {}
 
+	def save(){
+		def json = request.JSON
+		def report = json.id ? ReportJs.get(json.id) : new ReportJs()
+		report.name = json.name
+		report.jsonString = json.jsonString
+		report.save(failOnError: true)
+		render([msg: 'saved', id: report.id] as JSON)
+	}
+
+	def list(){
+		render (ReportJs.list() as JSON)
 	}
 
 	def domains(){
