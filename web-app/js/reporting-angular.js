@@ -147,7 +147,9 @@ function ReportCtrl($scope, $filter, $http, cellRenderer){
 			obj.formats = [];
 			reportingJs.getDomain(prop.type, function(domain){
 				for(var propertyName in domain.props){
-					obj.formats.push(createPropRenderer(propertyName, prop));
+					var renderer = createPropRenderer(propertyName, prop);
+					obj.formats.push(renderer);
+					cellRenderer.register(renderer);
 				}
 			});
 		}
@@ -157,12 +159,14 @@ function ReportCtrl($scope, $filter, $http, cellRenderer){
 		var obj = {prop: prop.name, projections: 'groupProperty'};
 		bindFormats(obj, prop);
 		$scope.conf.yAxis.push(obj);
+		return obj;
 	};
 
 	$scope.addX = function(prop){
 		var obj = {prop: prop.name, projections: 'groupProperty'};
 		bindFormats(obj, prop);
 		$scope.conf.xAxis.push(obj);
+		return obj;
 	};
 
 	$scope.addValue = function(prop){
@@ -215,7 +219,11 @@ function ReportCtrl($scope, $filter, $http, cellRenderer){
 		reportingJs.setId(report.id);
 		reportingJs.setName(report.name);
 		$scope.conf.cellValues.length = 0;
+		$scope.conf.xAxis.length = 0;
+		$scope.conf.yAxis.length = 0;
 		loadPropUI(conf.cellValues, $scope.addValue);
+		loadPropUI(conf.xAxis, $scope.addX);
+		loadPropUI(conf.yAxis, $scope.addY);
 	};
 
 	$scope.saveReport = function(){
