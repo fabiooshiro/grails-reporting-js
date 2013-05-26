@@ -1,7 +1,6 @@
 /**
- * html table
+ * html table td
  */
-
 var CellRenderer = (function(){
 	var indexKey = {};
 	var indexType = {};

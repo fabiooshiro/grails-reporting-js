@@ -327,6 +327,10 @@ var ReportingJs = (function(){
 			conf.id = id;
 		};
 
+		this.getId = function(){
+			return conf.id;
+		};
+
 		this.setName = function(name){
 			conf.name = name;
 		};
@@ -341,7 +345,7 @@ var ReportingJs = (function(){
 			$.ajax(contextPath + '/reportingJs/save', {
 				contentType : 'application/json',
 				type : 'POST',
-				data: JSON.stringify({jsonString: jsonString, name: obj.name, id: obj.id}),
+				data: JSON.stringify({jsonString: jsonString, name: obj.name, id: obj.id, domainName: obj.domainName}),
 				success: function(data){
 					conf.id = data.id;
 					callback(data);

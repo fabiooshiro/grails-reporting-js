@@ -4,6 +4,8 @@ class ReportJs {
 
 	String name
 
+	String domainName
+
 	String jsonString
 
 	String toString(){

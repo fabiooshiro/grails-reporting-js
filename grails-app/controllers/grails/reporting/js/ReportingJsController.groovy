@@ -8,17 +8,27 @@ class ReportingJsController {
 
 	def index() {}
 
+	def delete(){
+		def report = ReportJs.get(params.id)
+		if(report){
+			report.delete(failOnError: true, flush: true)
+		}
+		render([msg: 'deleted', id: report.id] as JSON)
+	}
+
 	def save(){
 		def json = request.JSON
 		def report = json.id ? ReportJs.get(json.id) : new ReportJs()
 		report.name = json.name
+		report.domainName = json.domainName ?: "Noname (${new Date().format('yyyy-MM-dd HH:mm:ss')})"
 		report.jsonString = json.jsonString
 		report.save(failOnError: true)
 		render([msg: 'saved', id: report.id] as JSON)
 	}
 
 	def list(){
-		render (ReportJs.list() as JSON)
+		def ls = ReportJs.findAllByDomainName(params.domainName)
+		render (ls as JSON)
 	}
 
 	def domains(){
