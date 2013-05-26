@@ -1,3 +1,4 @@
+
 <div ng-app="reportAngular">
 	<div class="row-fluid" ng-controller="ReportCtrl" ng-init="domainName='${modelName}';tableSelector='#table';contextPath='${request.contextPath}'">
 		<div class="span3">
@@ -13,24 +14,24 @@
 							</td>
 						</tr>
 					</table>
-					<table>
-						<tr ng-repeat="prop in domain.props">
-							<th style="text-align: right">
-								{{prop.name}}:
-							</th>
-							<td>
-								<input type="button" value="Row" ng-click="addY(prop)" class="btn btn-small"/>
-								<input type="button" value="Col" ng-click="addX(prop)" class="btn btn-small"/>
-								<input type="button" value="Val" ng-click="addValue(prop)" class="btn btn-small"/>
-								<input type="button" value="Sort" ng-click="addOrder(prop)" class="btn btn-small"/>
-								<input type="button" value="Filter" ng-click="addFilter(prop)" class="btn btn-small"/>
-							</td>
-						</tr>
-					</table>
-
-					<div style="padding: 5px">
+					<input type="button" value="New report" ng-click="newReport()" class="btn"/>
+					<div ng-show="report">
+						<div><input type="text" ng-model="report.name" placeholder="Report name" /></div>
+						<table>
+							<tr ng-repeat="prop in domain.props">
+								<th style="text-align: right">
+									{{prop.name}}:
+								</th>
+								<td>
+									<input type="button" value="Row" ng-click="addY(prop)" class="btn btn-small"/>
+									<input type="button" value="Col" ng-click="addX(prop)" class="btn btn-small"/>
+									<input type="button" value="Val" ng-click="addValue(prop)" class="btn btn-small"/>
+									<input type="button" value="Sort" ng-click="addOrder(prop)" class="btn btn-small"/>
+									<input type="button" value="Filter" ng-click="addFilter(prop)" class="btn btn-small"/>
+								</td>
+							</tr>
+						</table>					
 						<div>
-							<div><input type="text" ng-model="report.name" placeholder="Report name" /></div>
 							<strong>Rows:</strong>
 							<table>
 								<tr ng-repeat="prop in conf.yAxis">
@@ -122,7 +123,7 @@
 						<input type="button" value="Report!" ng-click="makeReport()" class="btn" />
 						<input type="button" value="Save" ng-click="saveReport()" class="btn" />
 						<input type="button" value="Save As..." ng-click="saveReportAs()" class="btn" ng-hide="report.id==null" />
-						<input type="button" value="New" ng-click="newReport()" class="btn" ng-hide="report.id==null" />
+						<a href="#closeReport" ng-click="report=null">Close</a>
 					</div>
 				</div>
 			</form>

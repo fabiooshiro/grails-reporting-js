@@ -264,7 +264,7 @@ function ReportCtrl($scope, $filter, $http, cellRenderer){
 
 	$scope.newReport = function(){
 		reportingJs.setId(null);
-		$scope.report = null;
+		$scope.report = {};
 		$scope.conf.cellValues.length = 0;
 		$scope.conf.xAxis.length = 0;
 		$scope.conf.yAxis.length = 0;

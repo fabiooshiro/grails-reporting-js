@@ -2,9 +2,7 @@
 <head>
 	<title>Grails Reporting JS</title>
 	<meta name="layout" content="moon" />
-	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
-	
-
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>	
 	<script type="text/javascript">
 		var config = {
 			contextPath: '${request.contextPath}'
