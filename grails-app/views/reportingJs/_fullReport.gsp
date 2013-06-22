@@ -1,6 +1,6 @@
 
 <div ng-app="reportAngular">
-	<div class="row-fluid" ng-controller="ReportCtrl" ng-init="domainName='${modelName}';tableSelector='#table';contextPath='${request.contextPath}'">
+	<div class="row-fluid" ng-controller="ReportCtrl" ng-init="domainName='${modelName}';tableSelector='#table';contextPath='${request.contextPath}';criteriaAppenderFunctionName='${criteriaAppender}';thRendererFunctionName='${thRenderer}'">
 		<div class="span3">
 			<form class="form-horizontal">
 				<div id="userInterface">

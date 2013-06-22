@@ -82,6 +82,13 @@ var ReportingJs = (function(){
 		return td;
 	}
 
+	function getThText(conf, text){
+		if(conf.thRenderer){
+			return conf.thRenderer(text);
+		}
+		return text;
+	}
+
 	function createAxisTable(data, headers, conf){
 		var objectList = makeObjects(data, headers);
 		var reportData = createDataMap(conf, objectList);
@@ -90,7 +97,8 @@ var ReportingJs = (function(){
 		var thead = outputTable.find('thead');
 		var tr = $('<tr>');
 		for (var i = 0; i < conf.yAxis.length; i++) {
-			var th = $('<th>').append(conf.yAxis[i].prop).attr('rowspan', conf.xAxis.length + 1);
+			var thText = getThText(conf, conf.yAxis[i].prop);
+			var th = $('<th>').append(thText).attr('rowspan', conf.xAxis.length + 1);
 			tr.append(th);
 		};
 		for (var i = 0; i < conf.xAxis.length; i++) {
@@ -99,7 +107,8 @@ var ReportingJs = (function(){
 				var prop = conf.xAxis[i].prop;
 				var td = createTd(conf, reportData.xAxis[j].obj, prop);
 				if(td.text() != lastTextContent){
-					var th = $('<th>').append(td.html());
+					var thText = getThText(conf, td.html());
+					var th = $('<th>').append(thText);
 					colspan = 1;
 					th.attr('colspan', conf.cellValues.length);
 					tr.append(th);
@@ -114,7 +123,8 @@ var ReportingJs = (function(){
 		};
 		for (var j = 0; j < reportData.xAxis.length; j++) {
 			for (var i = 0; i < conf.cellValues.length; i++) {
-				var th = $('<th>').append(conf.cellValues[i].prop);
+				var thText = getThText(conf, conf.cellValues[i].prop);
+				var th = $('<th>').append(thText);
 				tr.append(th);	
 			};
 		};
@@ -198,6 +208,9 @@ var ReportingJs = (function(){
 		clearTable(outputTable);
 		var headers = [];
 		var criteria = new Criteria(domain.simpleName);
+		if(conf.criteriaAppender){
+			conf.criteriaAppender(criteria);
+		}
 		criteria.projections(function(projections){
 			addProjections(conf.yAxis, projections, headers);
 			addProjections(conf.xAxis, projections, headers);
@@ -351,6 +364,14 @@ var ReportingJs = (function(){
 					callback(data);
 				}
 			});
+		};
+
+		this.setCriteriaAppender = function(fn){
+			conf.criteriaAppender = fn;
+		};
+
+		this.setThRenderer = function(fn){
+			conf.thRenderer = fn;
 		};
 	};
 

@@ -256,6 +256,12 @@ function ReportCtrl($scope, $filter, $http, cellRenderer){
 		reportingJs.setCellValues($scope.conf.cellValues);
 		reportingJs.setOrderBy($scope.conf.orderBy);
 		reportingJs.setFilter($scope.conf.filter);
+		if($scope.criteriaAppenderFunctionName){
+			reportingJs.setCriteriaAppender(eval($scope.criteriaAppenderFunctionName));
+		}
+		if($scope.thRendererFunctionName){
+			reportingJs.setThRenderer(eval($scope.thRendererFunctionName));
+		}
 		reportingJs.clearColumnRenderer();
 		insertAllRenderer($scope.conf.yAxis);
 		insertAllRenderer($scope.conf.xAxis);
