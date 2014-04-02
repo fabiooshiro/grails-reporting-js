@@ -59,6 +59,8 @@ function ReportCtrl($scope, $filter, $http, cellRenderer){
 		{name: 'b', id: 2}
 	];
 
+	$scope.domainProperties = [];
+
 	$scope.conf = {
 		yAxis: [],
 		xAxis: [],
@@ -80,6 +82,11 @@ function ReportCtrl($scope, $filter, $http, cellRenderer){
 			outputTable: $($scope.tableSelector),
 			onInit: function(domain){
 				$scope.domain = domain;
+				if ($scope.userInterceptor) {
+					$scope.domainProperties = eval($scope.userInterceptor).createDomainProperties(domain);
+				} else {
+					$scope.domainProperties = domain.props;
+				}
 				loadReports();
 				$scope.$digest();
 			}
@@ -126,7 +133,7 @@ function ReportCtrl($scope, $filter, $http, cellRenderer){
 			name: propertyName,
 			key: prop.type + '.' + propertyName,
 			render: function(value){
-				return $('<td>').text(value[propertyName]).css('text-align', 'center');
+				return $('<td>').text(value ? value[propertyName] : '').css('text-align', 'center');
 			}
 		}
 	};

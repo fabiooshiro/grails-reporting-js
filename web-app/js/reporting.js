@@ -22,7 +22,7 @@ var ReportingJs = (function(){
 	};
 
 	function getKey(obj){
-		if(typeof(obj) == 'object'){
+		if(typeof(obj) == 'object' && obj != null){
 			return obj.id;
 		}
 		return obj;

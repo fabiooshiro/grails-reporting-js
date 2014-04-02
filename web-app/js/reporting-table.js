@@ -45,7 +45,7 @@ var CellRenderer = (function(){
 			function createNumberRenderer(name, key, fractionSize){
 				return {
 					name: name,
-					types: ['java.math.BigDecimal', 'java.lang.Long', 'java.lang.Integer'],
+					types: ['java.math.BigDecimal', 'java.lang.Long', 'java.lang.Integer', 'java.lang.Double'],
 					key: key,
 					render: function(value){
 						var formatted = $filter('number')(value, fractionSize);
