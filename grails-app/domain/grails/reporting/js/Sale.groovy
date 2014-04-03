@@ -35,6 +35,6 @@ class Sale{
 		month formula: 'MONTH(SETTLEMENT_DATE)'
 		year formula: 'YEAR(SETTLEMENT_DATE)'
 		quarter formula: 'QUARTER(SETTLEMENT_DATE)'
-        autoImport false
+		autoImport false
 	}
 }

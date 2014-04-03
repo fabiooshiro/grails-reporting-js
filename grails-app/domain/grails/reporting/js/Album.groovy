@@ -12,7 +12,7 @@ class Album {
 		"Album ${id}"
 	}
 
-    static constraints = {
-    	year nullable: true
-    }
+	static constraints = {
+		year nullable: true
+	}
 }

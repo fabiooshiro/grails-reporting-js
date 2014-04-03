@@ -12,10 +12,7 @@ class ReportJs {
 		name
 	}
 
-    static constraints = {
-    }
-
-    static mapping = {
-    	jsonString type: 'text'
-    }
+	static mapping = {
+		jsonString type: 'text'
+	}
 }
