@@ -41,6 +41,6 @@ grails.project.dependency.resolution = {
 
         runtime ":jquery:1.8.2"
         runtime ":resources:1.1.6"
-        compile ":criteria-js:0.3"
+        compile ":criteria-js:0.5.1"
     }
 }

@@ -14,7 +14,6 @@ modules = {
 
 	'reporting-bootstrap'{
 		dependsOn 'reporting-js'
-		resource url: 'css/bootstrap.css', disposition: 'head'
 		resource url: 'js/bootstrap.js', disposition: 'head'
 	}
 }
