@@ -162,29 +162,29 @@ function ReportCtrl($scope, $filter, $http, cellRenderer){
 		}
 	};
 
-	$scope.addY = function(prop){
-		var obj = {prop: prop.name, projections: 'groupProperty'};
+	$scope.addY = function(prop) {
+		var obj = {prop: prop.name, label: prop.label || prop.name, projections: 'groupProperty'};
 		bindFormats(obj, prop);
 		$scope.conf.yAxis.push(obj);
 		return obj;
 	};
 
 	$scope.addX = function(prop){
-		var obj = {prop: prop.name, projections: 'groupProperty'};
+		var obj = {prop: prop.name, label: prop.label || prop.name, projections: 'groupProperty'};
 		bindFormats(obj, prop);
 		$scope.conf.xAxis.push(obj);
 		return obj;
 	};
 
 	$scope.addValue = function(prop){
-		var obj = {prop: prop.name, projections: 'sum'};
+		var obj = {prop: prop.name, label: prop.label || prop.name, projections: 'sum'};
 		bindFormats(obj, prop);
 		$scope.conf.cellValues.push(obj);
 		return obj;
 	};
 
 	$scope.addOrder = function(prop){
-		var obj = {sort: prop.name, order: 'asc'}
+		var obj = {sort: prop.name, label: prop.label || prop.name, order: 'asc'}
 		$scope.conf.orderBy.push(obj);
 		return obj;
 	};
