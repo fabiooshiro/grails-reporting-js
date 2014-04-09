@@ -1,6 +1,6 @@
 class GrailsReportingJsGrailsPlugin {
 
-    def version = "0.3"
+    def version = "0.3.1"
     def grailsVersion = "2.1 > *"
     def dependsOn = [:]
 
