@@ -1,8 +1,6 @@
 Grails Reporting JS
 ===================
 
-Live example at <a href="http://poetrystore.aws.af.cm/sale/report">http://poetrystore.aws.af.cm/sale/report</a> 
-
 Usage:
 
 ```jsp
